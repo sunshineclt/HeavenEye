@@ -1,6 +1,7 @@
 # SkyEye
 
 Class Project for *Fundamentals of Digital Media Technology*
+
 Face Detection and Identification
 
 ## License
