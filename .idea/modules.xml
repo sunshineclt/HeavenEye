@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/SkyEye.iml" filepath="$PROJECT_DIR$/.idea/SkyEye.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../HeavenEye/.idea/HeavenEye.iml" filepath="$PROJECT_DIR$/../HeavenEye/.idea/HeavenEye.iml" />
     </modules>
   </component>
 </project>

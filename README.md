@@ -1,4 +1,4 @@
-# SkyEye
+# HeavenEye
 
 Class Project for *Fundamentals of Digital Media Technology*
 
