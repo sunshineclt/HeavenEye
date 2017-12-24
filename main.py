@@ -53,12 +53,13 @@ embeddings = Network.inference(images_placeholder, pool_type,
                                1.0, 
                                phase_train=phase_train_placeholder)
 
-ema = tf.train.ExponentialMovingAverage(1.0)
-saver = tf.train.Saver(ema.variables_to_restore())
-model_checkpoint_path = './model_check_point/model-20160506.ckpt-500000'
-saver.restore(sess, model_checkpoint_path)
-print('facenet embedding model building finished')
-
+#ema = tf.train.ExponentialMovingAverage(1.0)
+#saver = tf.train.Saver(ema.variables_to_restore())
+#model_checkpoint_path = './model_check_point/model-20160506.ckpt-500000'
+#saver.restore(sess, model_checkpoint_path)
+ckpt = tf.train.get_checkpoint_state('./model_check_point/')
+saver = tf.train.import_meta_graph(ckpt.model_checkpoint_path +'.meta')
+saver.restore(sess,ckpt.model_checkpoint_path)
 
 pic = cv2.imread("test.jpg")
 
