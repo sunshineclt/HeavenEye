@@ -1,5 +1,4 @@
 import xml.etree.ElementTree as ET
-import sys
 
 
 class XMLOperation:
@@ -14,12 +13,12 @@ class XMLOperation:
             imageName = item.attrib["imageName"]
             labels = []
             for label in item:
-                labels.append((label.attrib["id"],
-                               label.attrib["score"],
-                               label.attrib["l"],
-                               label.attrib["t"],
-                               label.attrib["r"],
-                               label.attrib["b"]))
+                labels.append((int(label.attrib["id"]),
+                               int(label.attrib["score"]),
+                               int(label.attrib["l"]),
+                               int(label.attrib["t"]),
+                               int(label.attrib["r"]),
+                               int(label.attrib["b"])))
             data[imageName] = labels
         return data
 
