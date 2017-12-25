@@ -14,7 +14,7 @@ class XMLOperation:
             labels = []
             for label in item:
                 labels.append((int(label.attrib["id"]),
-                               int(label.attrib["score"]),
+                               float(label.attrib["score"]),
                                int(label.attrib["l"]),
                                int(label.attrib["t"]),
                                int(label.attrib["r"]),
