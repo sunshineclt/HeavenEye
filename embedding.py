@@ -47,11 +47,10 @@ def main(args):
       
         with tf.Session() as sess:
             # Read the file containing the pairs used for testing
-            pairs = lfw.read_pairs(os.path.expanduser('./datasets/lfw/align/pairs.txt'))
+            train_set = facenet.get_dataset(args.data_dir)
 
             # Get the paths for the corresponding images
-            paths, actual_issame = lfw.get_paths(os.path.expanduser(args.lfw_dir), pairs, 'png')
-
+            paths, labels = facenet.get_image_paths_and_labels(train_set)
             # Load the model
             facenet.load_model(args.model)
             
@@ -70,13 +69,13 @@ def main(args):
             images = facenet.load_data(paths, False, False, image_size)
             feed_dict = { images_placeholder:images, phase_train_placeholder:False }
             emb_array[0:nrof_images,:] = sess.run(embeddings, feed_dict=feed_dict)
-            print(emb_array)
+            numpy.save("20.npy",emb_array)
             
             
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('lfw_dir', type=str,
+    parser.add_argument('data_dir', type=str,
         help='Path to the data directory containing aligned LFW face patches.')
     parser.add_argument('model', type=str, 
         help='Could be either a directory containing the meta_file and ckpt_file or a model protobuf (.pb) file')

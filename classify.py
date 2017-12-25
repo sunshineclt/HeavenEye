@@ -46,17 +46,19 @@ def main(args):
             dataset_pro = facenet.get_dataset(args.data_dir)
             dataset = []
             # Check that there are at least one training image per class
-            for cls in dataset_pro:
-                if(len(cls.image_paths)>0):
-                    dataset.append(cls) 
-                    print(cls)        
-
+            if (args.mode=='TRAIN'):
+                for cls in dataset_pro:
+                    if(len(cls.image_paths)>0):
+                        dataset.append(cls)         
                  
-            paths, labels = facenet.get_image_paths_and_labels(dataset)
+                paths, labels = facenet.get_image_paths_and_labels(dataset)
             
-            print('Number of classes: %d' % len(dataset))
-            print('Number of images: %d' % len(paths))
-            
+                print('Number of classes: %d' % len(dataset))
+                print('Number of images: %d' % len(paths))
+            else:
+                dataset = dataset_pro
+                
+                paths = facenet.get_image_paths(dataset)
             # Load the model
             print('Loading feature extraction model')
             facenet.load_model(args.model)
@@ -111,8 +113,6 @@ def main(args):
                 for i in range(len(best_class_indices)):
                     print('%4d  %s: %.3f' % (i, class_names[best_class_indices[i]], best_class_probabilities[i]))
                     
-                accuracy = np.mean(np.equal(best_class_indices, labels))
-                print('Accuracy: %.3f' % accuracy)
                 
             
 def parse_arguments(argv):
