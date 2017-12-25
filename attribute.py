@@ -20,6 +20,8 @@ def transform_with_truth(truth_path, face_dir):
     truth = XMLOperation.read_from_file(truth_path)
 
     for _, image_name in enumerate(truth):
+        if image_name == "nothing":
+            continue
         print("Image name: {}".format(image_name))
         datas = truth[image_name]
         for data in datas:
