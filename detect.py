@@ -86,18 +86,27 @@ def detect_face_with_range(start_index, end_index):
         all_face_positions[file_name] = face_positions
 
 
-th1 = threading.Thread(target=detect_face_with_range, args=(15980, 16500))
+th1 = threading.Thread(target=detect_face_with_range, args=(15980, 16300))
 th1.start()
-th2 = threading.Thread(target=detect_face_with_range, args=(16501, 17000))
+th2 = threading.Thread(target=detect_face_with_range, args=(16301, 16600))
 th2.start()
-th3 = threading.Thread(target=detect_face_with_range, args=(17001, 17500))
+th3 = threading.Thread(target=detect_face_with_range, args=(16601, 16900))
 th3.start()
-th4 = threading.Thread(target=detect_face_with_range, args=(17501, 18080))
+th4 = threading.Thread(target=detect_face_with_range, args=(16901, 17200))
 th4.start()
+th5 = threading.Thread(target=detect_face_with_range, args=(17201, 17500))
+th5.start()
+th6 = threading.Thread(target=detect_face_with_range, args=(17501, 17800))
+th6.start()
+th7 = threading.Thread(target=detect_face_with_range, args=(17801, 18080))
+th7.start()
 th1.join()
 th2.join()
 th3.join()
 th4.join()
+th5.join()
+th6.join()
+th7.join()
 
 with open(os.path.join(save_path, "position.json"), 'w') as outfile:
     json.dump(all_face_positions, outfile)
