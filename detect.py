@@ -27,10 +27,10 @@ with tf.Graph().as_default():
     with sess.as_default():
         pnet, rnet, onet = FaceDetection.create_mtcnn(sess, './model_check_point/')
 
-path = "/share/dataset/train/1_1_04_0/prob/dongnanmeneast_15_1920x1080_30/"
-save_path = "/mnt/disk/faces/"
-# path = "."
-# save_path = "./test/"
+# path = "/share/dataset/train/1_1_04_0/prob/dongnanmeneast_15_1920x1080_30/"
+# save_path = "/mnt/disk/faces/"
+path = "."
+save_path = "./test/"
 
 files = os.listdir(path)
 for file_name in files:
@@ -43,6 +43,7 @@ for file_name in files:
     gray = cv2.cvtColor(pic, cv2.COLOR_BGR2GRAY)
 
     img = to_rgb(gray)
+    width, height = gray.shape
 
     bounding_boxes, _ = FaceDetection.detect_face(img, minsize, pnet, rnet, onet, threshold, factor)
     print("Detect {} face in {}".format(len(bounding_boxes), file_name))
@@ -55,6 +56,10 @@ for file_name in files:
         os.makedirs(img_dir)
     for face_position in bounding_boxes:
         face_position = face_position.astype(int)
+        face_position[1] = 0 if face_position[1] < 0 else face_position[1]
+        face_position[3] = width - 1 if face_position[3] > width else face_position[3]
+        face_position[0] = 0 if face_position[0] < 0 else face_position[0]
+        face_position[2] = height - 1 if face_position[2] > height else face_position[2]
 
         cv2.rectangle(pic,
                       (face_position[0],
