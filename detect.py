@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import tensorflow as tf
 import os
+import json
+import threading
 
 import FaceDetection
 
@@ -31,55 +33,80 @@ path = "/share/dataset/train/1_1_04_0/prob/dongnanmeneast_15_1920x1080_30/"
 save_path = "/mnt/disk/faces/"
 # path = "."
 # save_path = "./test/"
-
-files = os.listdir(path)
-for file_name in files:
-    if ".jpg" not in file_name:
-        continue
-
-    pic = cv2.imread(os.path.join(path, file_name))
-
-    find_results = []
-    gray = cv2.cvtColor(pic, cv2.COLOR_BGR2GRAY)
-
-    img = to_rgb(gray)
-    width, height = gray.shape
-
-    bounding_boxes, _ = FaceDetection.detect_face(img, minsize, pnet, rnet, onet, threshold, factor)
-    print("Detect {} face in {}".format(len(bounding_boxes), file_name))
-
-    number_of_faces = bounding_boxes.shape[0]  # number of faces
-
-    index = 0
-    img_dir = os.path.join(save_path, file_name)
-    if not os.path.exists(img_dir):
-        os.makedirs(img_dir)
-    for face_position in bounding_boxes:
-        face_position = face_position.astype(int)
-        face_position[1] = 0 if face_position[1] < 0 else face_position[1]
-        face_position[3] = width - 1 if face_position[3] > width else face_position[3]
-        face_position[0] = 0 if face_position[0] < 0 else face_position[0]
-        face_position[2] = height - 1 if face_position[2] > height else face_position[2]
-
-        cv2.rectangle(pic,
-                      (face_position[0],
-                       face_position[1]),
-                      (face_position[2],
-                       face_position[3]),
-                      (0, 255, 0), 2)
-
-        crop = img[face_position[1]:face_position[3], face_position[0]:face_position[2], ]
-        crop = cv2.resize(crop, (96, 96), interpolation=cv2.INTER_CUBIC)
-        cv2.imwrite(os.path.join(img_dir, str(index) + ".png"), crop)
-        index += 1
+all_face_positions = {}
 
 
+def detect_face_with_range(start_index, end_index):
+    for now_index in xrange(start_index, end_index + 1):
+        file_name = str(now_index) + ".jpg"
+        if not os.path.exists(os.path.join(path, file_name)):
+            continue
 
-        # Display the resulting frame
-        # cv2.imshow('face_detection', pic)
-        # while True:
-        #     if cv2.waitKey(1) & 0xFF == ord('q'):
-        #         break
-        #
-        # # When everything is done, release the capture
-        # cv2.destroyAllWindows()
+        pic = cv2.imread(os.path.join(path, file_name))
+
+        find_results = []
+        gray = cv2.cvtColor(pic, cv2.COLOR_BGR2GRAY)
+
+        img = to_rgb(gray)
+        width, height = gray.shape
+
+        bounding_boxes, _ = FaceDetection.detect_face(img, minsize, pnet, rnet, onet, threshold, factor)
+        print("Detect {} face in {}".format(len(bounding_boxes), file_name))
+
+        number_of_faces = bounding_boxes.shape[0]  # number of faces
+
+        index = 0
+        img_dir = os.path.join(save_path, file_name)
+        if not os.path.exists(img_dir):
+            os.makedirs(img_dir)
+        face_positions = []
+        for face_position in bounding_boxes:
+            face_position = face_position.astype(int)
+            face_position[1] = 0 if face_position[1] < 0 else face_position[1]
+            face_position[3] = width - 1 if face_position[3] > width else face_position[3]
+            face_position[0] = 0 if face_position[0] < 0 else face_position[0]
+            face_position[2] = height - 1 if face_position[2] > height else face_position[2]
+
+            cv2.rectangle(pic,
+                          (face_position[0],
+                           face_position[1]),
+                          (face_position[2],
+                           face_position[3]),
+                          (0, 255, 0), 2)
+
+            crop = img[face_position[1]:face_position[3], face_position[0]:face_position[2], ]
+            crop = cv2.resize(crop, (96, 96), interpolation=cv2.INTER_CUBIC)
+            cv2.imwrite(os.path.join(img_dir, str(index) + ".png"), crop)
+            face_positions.append((face_position[0],
+                                   face_position[1],
+                                   face_position[2],
+                                   face_position[3]))
+            index += 1
+
+        all_face_positions[file_name] = face_positions
+
+
+th1 = threading.Thread(target=detect_face_with_range, args=(15980, 16500))
+th1.start()
+th2 = threading.Thread(target=detect_face_with_range, args=(16501, 17000))
+th2.start()
+th3 = threading.Thread(target=detect_face_with_range, args=(17001, 17500))
+th3.start()
+th4 = threading.Thread(target=detect_face_with_range, args=(17501, 18080))
+th4.start()
+th1.join()
+th2.join()
+th3.join()
+th4.join()
+
+with open(os.path.join(save_path, "position.json"), 'w') as outfile:
+    json.dump(all_face_positions, outfile)
+
+# Display the resulting frame
+# cv2.imshow('face_detection', pic)
+# while True:
+#     if cv2.waitKey(1) & 0xFF == ord('q'):
+#         break
+#
+# # When everything is done, release the capture
+# cv2.destroyAllWindows()
