@@ -25,14 +25,16 @@ print('Creating networks and loading parameters')
 gpu_memory_fraction = 1.0
 with tf.Graph().as_default():
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_memory_fraction)
-    sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options, log_device_placement=False))
+    config = tf.ConfigProto(gpu_options=gpu_options, log_device_placement=False)
+    config.gpu_options.allow_growth = True
+    sess = tf.Session(config=config)
     with sess.as_default():
         pnet, rnet, onet = FaceDetection.create_mtcnn(sess, './model_check_point/')
 
-path = "/share/dataset/train/1_1_04_0/prob/dongnanmenwest_15_1920x1080_30/"
-save_path = "/mnt/disk/faces_west/"
-# path = "."
-# save_path = "./test/"
+# path = "/share/dataset/train/1_1_04_0/prob/dongnanmenwest_15_1920x1080_30/"
+# save_path = "/mnt/disk/faces_west/"
+path = "."
+save_path = "./test/"
 all_face_positions = {}
 
 
