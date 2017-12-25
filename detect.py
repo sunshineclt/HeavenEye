@@ -34,6 +34,7 @@ save_path = "/mnt/disk/faces/"
 
 files = os.listdir(path)
 for file_name in files:
+    print("Now detecting face in: ", file_name)
     if ".jpg" not in file_name:
         continue
 
