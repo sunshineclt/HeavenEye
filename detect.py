@@ -31,10 +31,10 @@ with tf.Graph().as_default():
     with sess.as_default():
         pnet, rnet, onet = FaceDetection.create_mtcnn(sess, './model_check_point/')
 
-# path = "/share/dataset/train/1_1_04_0/prob/dongnanmenwest_15_1920x1080_30/"
-# save_path = "/mnt/disk/faces_west/"
-path = "."
-save_path = "./test/"
+path = "/share/dataset/train/1_1_04_0/prob/dongnanmenwest_15_1920x1080_30/"
+save_path = "/mnt/disk/faces_west/"
+# path = "."
+# save_path = "./test/"
 all_face_positions = {}
 
 
