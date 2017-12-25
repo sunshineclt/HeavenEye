@@ -34,7 +34,6 @@ save_path = "/mnt/disk/faces/"
 
 files = os.listdir(path)
 for file_name in files:
-    print("Now detecting face in: ", file_name)
     if ".jpg" not in file_name:
         continue
 
@@ -46,6 +45,7 @@ for file_name in files:
     img = to_rgb(gray)
 
     bounding_boxes, _ = FaceDetection.detect_face(img, minsize, pnet, rnet, onet, threshold, factor)
+    print("Detect {} face in {}".format(len(bounding_boxes), file_name))
 
     number_of_faces = bounding_boxes.shape[0]  # number of faces
 
