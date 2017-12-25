@@ -1,5 +1,5 @@
 import json
-import XMLOperation
+from XMLOperation import XMLOperation
 import os
 import cv2
 
