@@ -31,7 +31,7 @@ with tf.Graph().as_default():
     with sess.as_default():
         pnet, rnet, onet = FaceDetection.create_mtcnn(sess, './model_check_point/')
 
-path = "/share/dataset/val/1_2_04_1/prob/dongnanmeneast_15_1920x1080_30/"
+path = "/share/dataset/val/1_2_04_1/prob/dongnanmenwest_16_1920x1080_30/"
 save_path = "/mnt/disk/faces_test_west/"
 # path = "."
 # save_path = "./test/"
@@ -40,7 +40,7 @@ all_face_positions = {}
 
 def detect_face_with_range(start_index, end_index):
     for now_index in xrange(start_index, end_index + 1):
-        file_name = str(now_index) + ".jpg"
+        file_name = str(now_index).zfill(5) + ".jpg"
         if not os.path.exists(os.path.join(path, file_name)):
             continue
 
@@ -89,19 +89,19 @@ def detect_face_with_range(start_index, end_index):
         all_face_positions[file_name] = face_positions
 
 
-th1 = threading.Thread(target=detect_face_with_range, args=(18082, 18500))
+th1 = threading.Thread(target=detect_face_with_range, args=(105, 400))
 th1.start()
-th2 = threading.Thread(target=detect_face_with_range, args=(18501, 18900))
+th2 = threading.Thread(target=detect_face_with_range, args=(401, 700))
 th2.start()
-th3 = threading.Thread(target=detect_face_with_range, args=(18901, 19300))
+th3 = threading.Thread(target=detect_face_with_range, args=(701, 1000))
 th3.start()
-th4 = threading.Thread(target=detect_face_with_range, args=(19301, 19700))
+th4 = threading.Thread(target=detect_face_with_range, args=(1001, 1300))
 th4.start()
-th5 = threading.Thread(target=detect_face_with_range, args=(19701, 20100))
+th5 = threading.Thread(target=detect_face_with_range, args=(1301, 1500))
 th5.start()
-th6 = threading.Thread(target=detect_face_with_range, args=(20101, 20400))
+th6 = threading.Thread(target=detect_face_with_range, args=(1501, 1700))
 th6.start()
-th7 = threading.Thread(target=detect_face_with_range, args=(20401, 20688))
+th7 = threading.Thread(target=detect_face_with_range, args=(1701, 1999))
 th7.start()
 th1.join()
 th2.join()

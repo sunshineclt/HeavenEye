@@ -43,22 +43,18 @@ def main(args):
         with tf.Session() as sess:
             
             np.random.seed(seed=args.seed)
-            dataset_pro = facenet.get_dataset(args.data_dir)
+            dataset_pre = facenet.get_dataset(args.data_dir)
             dataset = []
             # Check that there are at least one training image per class
-            if (args.mode=='TRAIN'):
-                for cls in dataset_pro:
-                    if(len(cls.image_paths)>0):
-                        dataset.append(cls)         
+            for cls in dataset_pre:
+                 if len(cls.image_paths)>0: 
+                    dataset.append(cls)        
                  
-                paths, labels = facenet.get_image_paths_and_labels(dataset)
+            paths, labels = facenet.get_image_paths_and_labels(dataset)
             
-                print('Number of classes: %d' % len(dataset))
-                print('Number of images: %d' % len(paths))
-            else:
-                dataset = dataset_pro
-                
-                paths = facenet.get_image_paths(dataset)
+            print('Number of classes: %d' % len(dataset))
+            print('Number of images: %d' % len(paths))
+            
             # Load the model
             print('Loading feature extraction model')
             facenet.load_model(args.model)
@@ -87,7 +83,7 @@ def main(args):
             if (args.mode=='TRAIN'):
                 # Train classifier
                 print('Training classifier')
-                model = SVC(kernel='linear', probability=True)
+                model = SVC(kernel='linear', probability=True, decision_function_shape='ovo')
                 model.fit(emb_array, labels)
             
                 # Create a list of class names
@@ -109,11 +105,27 @@ def main(args):
                 predictions = model.predict_proba(emb_array)
                 best_class_indices = np.argmax(predictions, axis=1)
                 best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
-                
+                f = open("east_out.txt", "w")
                 for i in range(len(best_class_indices)):
-                    print('%4d  %s: %.3f' % (i, class_names[best_class_indices[i]], best_class_probabilities[i]))
-                    
-                
+                    print('%4d   %s   %s: %.3f' % (i, paths[i], class_names[best_class_indices[i]], best_class_probabilities[i]))
+                    f.write('%4d   %s   %s: %.3f' % (i, paths[i], class_names[best_class_indices[i]], best_class_probabilities[i]))                    
+                accuracy = np.mean(np.equal(best_class_indices, labels))
+                print('Accuracy: %.3f' % accuracy)
+                f.write('Accuracy: %.3f' % accuracy)
+                f.close()
+            
+def split_dataset(dataset, min_nrof_images_per_class, nrof_train_images_per_class):
+    train_set = []
+    test_set = []
+    for cls in dataset:
+        paths = cls.image_paths
+        # Remove classes with less than min_nrof_images_per_class
+        if len(paths)>=min_nrof_images_per_class:
+            np.random.shuffle(paths)
+            train_set.append(facenet.ImageClass(cls.name, paths[:nrof_train_images_per_class]))
+            test_set.append(facenet.ImageClass(cls.name, paths[nrof_train_images_per_class:]))
+    return train_set, test_set
+
             
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()

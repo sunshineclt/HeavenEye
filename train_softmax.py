@@ -48,10 +48,10 @@ def main(args):
     
     print('Model directory: %s' % model_dir)
     print('Log directory: %s' % log_dir)
-    pretrained_model = None
-    if args.pretrained_model:
-        pretrained_model = os.path.expanduser(args.pretrained_model)
-        print('Pre-trained model: %s' % pretrained_model)
+    #pretrained_model = None
+    #if args.pretrained_model:
+     #   pretrained_model = os.path.expanduser(args.pretrained_model)
+      #  print('Pre-trained model: %s' % pretrained_model)
     
     if args.lfw_dir:
         print('LFW directory: %s' % args.lfw_dir)
@@ -179,9 +179,10 @@ def main(args):
 
         with sess.as_default():
 
-            if pretrained_model:
-                print('Restoring pretrained model: %s' % pretrained_model)
-                saver.restore(sess, pretrained_model)
+            if args.pretrained_model:
+                ckpt = tf.train.get_checkpoint_state(args.pretrained_model)
+                print('Restoring pretrained model: %s' % ckpt.model_checkpoint_path)
+                saver.restore(sess, ckpt.model_checkpoint_path)
 
             # Training and validation loop
             print('Running training')
